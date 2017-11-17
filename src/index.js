@@ -47,8 +47,11 @@ function setup(options) {
   // create engine
   let engine = Engine.create({
   	// enable sleeping as we are collision heavy users
-  	enableSleeping: true
+  	// enableSleeping: true
   })
+
+  engine.world.gravity.x = 0
+  engine.world.gravity.y = 0
 
   // create renderer
   let render = Render.create({
@@ -56,7 +59,8 @@ function setup(options) {
   	engine: engine,
   	options: {
   		wireframes: false,
-  		// background: '#FAFAFA',
+      // showAngleIndicator: true,
+  		background: '#FFF100',
   		pixelRatio: 2,
 
   		width: CANVAS_WIDTH,
@@ -74,7 +78,7 @@ function setup(options) {
   	// ceiling
 		Bodies.rectangle(
 	    CANVAS_WIDTH / 2, // align center to center
-	    (60 / 2),         
+	    -(60 / 2),         
 	    CANVAS_WIDTH, // width
 	    60,  // height
 	    {
@@ -85,12 +89,14 @@ function setup(options) {
 	  // ground
 		Bodies.rectangle(
 	    CANVAS_WIDTH / 2, // align center to center
-	    CANVAS_HEIGHT - (60 / 2),         
+	    CANVAS_HEIGHT + (60 / 2),         
 	    CANVAS_WIDTH, // width
 	    60,  // height
 	    {
 	      isStatic: true,
 	      restitution: 1,
+        friction: 0,
+        frictionStatic: 0,
 	      // plugin: {
 	      // 	sound: {
 	      // 		audio: 'FX_001',
@@ -98,10 +104,10 @@ function setup(options) {
 	      // }
 	    }
 	  ),
-
+    
 	  // left
 		Bodies.rectangle(
-	    (60 / 2), // align center to center
+	    -(60 / 2), // align center to center
 	    CANVAS_HEIGHT / 2,         
 	    60, // width
 	    CANVAS_HEIGHT,  // height
@@ -112,7 +118,7 @@ function setup(options) {
 	  ),
 	  // right
 		Bodies.rectangle(
-	    CANVAS_WIDTH - (60 / 2), // align center to center
+	    CANVAS_WIDTH + (60 / 2), // align center to center
 	    CANVAS_HEIGHT / 2,         
 	    60, // width
 	    CANVAS_HEIGHT,  // height
@@ -128,90 +134,91 @@ function setup(options) {
   /**
    * Sound bodies
    */
-  let circle_1 = Bodies.circle(250, 250, 20, {
-    restitution: 1,
+  const DEFAULT_BODY_OPTIONS = {
     density: 0.3,
-    plugin: {
-    	sound: {
-    		audio: 'CYMBAL_001',
-    		// audio: randomAudio(),
-    	},
-    	collisionStyles: {
-    		start: {
-    			fillStyle: 'red',
-    		},
-    		active: {
-    			fillStyle: 'green',
-    		}
-    	}
-    }
-  })
+    restitution: 1.05,
+    friction: 0,
+    frictionAir: 0,
+    frictionStatic: 0,
+  }
 
-  let circle_2 = Bodies.circle(300, 250, 20, {
-    restitution: 1,
-    density: 0.3,
-    plugin: {
-    	sound: {
-    		audio: 'FX_001',
-    		// audio: randomAudio(),
-    	},
-    	collisionStyles: {
-    		start: {
-    			fillStyle: 'red',
-    		},
-    		active: {
-    			fillStyle: 'green',
-    		}
-    	}
-    }
-  })
-
-  let circle_3 = Bodies.circle(250, 300, 20, {
-    restitution: 1,
-    density: 0.3,
-    plugin: {
-    	sound: {
-    		audio: 'FX_002',
-    		// audio: randomAudio(),
-    	},
-    	collisionStyles: {
-    		start: {
-    			fillStyle: 'red',
-    		},
-    		active: {
-    			fillStyle: 'green',
-    		}
-    	}
-    }
-  })
-
-  let circle_4 = Bodies.circle(275, 400, 20, {
-    restitution: 1,
-    density: 0.3,
-    plugin: {
-    	sound: {
-    		audio: 'FX_003',
-    		// audio: randomAudio(),
-    	},
-    	collisionStyles: {
-    		start: {
-    			fillStyle: 'red',
-    		},
-    		active: {
-    			fillStyle: 'green',
-    		}
-    	}
-    }
-  })
+  function genBodyOptions(options) {
+    return Object.assign({}, DEFAULT_BODY_OPTIONS, options)
+  }
 
   let bodies = [
-  	circle_1,
-  	circle_2,
-  	circle_3,
-  	circle_4
-  ]
+    // mallet-1
+    Bodies.rectangle(250, 250, 40, 40, genBodyOptions({
+      plugin: {
+        sound: { audio: 'limao/mallet-1' },
+      },
+      render: {
+        fillStyle: '#EE2D2C',
+      }
+    })),
+    Bodies.rectangle(250, 250, 40, 40, genBodyOptions({
+      plugin: {
+        sound: { audio: 'limao/mallet-1' },
+      },
+      render: {
+        fillStyle: '#EE2D2C',
+      }
+    })),
+    Bodies.rectangle(250, 250, 40, 40, genBodyOptions({
+      plugin: {
+        sound: { audio: 'limao/mallet-1' },
+      },
+      render: {
+        fillStyle: '#EE2D2C',
+      }
+    })),
+    Bodies.rectangle(250, 250, 40, 40, genBodyOptions({
+      plugin: {
+        sound: { audio: 'limao/mallet-1' },
+      },
+      render: {
+        fillStyle: '#EE2D2C',
+      }
+    })),
 
-  bodies.forEach(body => body.plugin.sound.audio = randomAudio())
+    // pad
+    Bodies.circle(250, 250, 100, genBodyOptions({
+      plugin: {
+        sound: {
+          // audio: 'limao/pad',
+          alternateAudios: [
+            'limao/pad-2',
+            'limao/pad-3'
+          ]
+        }
+      },
+      render: {
+        fillStyle: '#253A7E'
+      },
+      isStatic: true,
+    })),
+
+    // mallet-2
+    Matter.Bodies.polygon(250, 250, 3, 20, genBodyOptions({
+      plugin: {
+        sound: { audio: 'limao/mallet-2' },
+      },
+      render: {
+        fillStyle: '#40AD48'
+      }
+    })),
+
+    // loop-1
+    Matter.Bodies.polygon(250, 250, 3, 20, genBodyOptions({
+      plugin: {
+        sound: { audio: 'limao/loop-1' },
+      },
+      render: {
+        fillStyle: '#000000'
+      }
+    }))
+  ]
+  // bodies.forEach(body => body.plugin.sound.audio = randomAudio())
 
   World.add(engine.world, bodies)
 
@@ -220,101 +227,23 @@ function setup(options) {
 
 
 
-
-
-
   // add mouse control
-  var mouse = Mouse.create(render.canvas)
-  var mouseConstraint = MouseConstraint.create(engine, {
+  let mouse = Mouse.create(render.canvas)
+  let mouseConstraint = MouseConstraint.create(engine, {
     mouse: mouse,
     constraint: {
-      stiffness: 1,
+      // allow bodies on mouse to rotate
+      angularStiffness: 0,
       render: {
-        visible: false,
+        visible: false
       }
     }
   })
-  // https://github.com/liabru/matter-js/issues/84
-  mouse.element.removeEventListener("mousewheel", mouse.mousewheel)
-  mouse.element.removeEventListener("DOMMouseScroll", mouse.mousewheel)
-  
-  World.add(engine.world, mouseConstraint)
-  
-  // mouse events
-  var isDragging = false
-  var wasDragging = false
-  Events.on(mouseConstraint, 'startdrag', function (e) {
-    isDragging = true
-  })
-  Events.on(mouseConstraint, 'enddrag', function (e) {
-    isDragging = false
-    wasDragging = true
-    
-    setTimeout(function () {
-      wasDragging = false
-    }, 500)
-  })
-  Events.on(mouseConstraint, 'mousemove', function (e) {
-    
-    if (isDragging) {
-      return
-    }
-    
-    // console.log('mousemove', e.mouse.absolute)
-    var mousePosition = e.mouse.absolute
-    var target = Matter.Query.point(bodies, mousePosition)[0]
-    
-    if (!target) {
-      return
-    }
-    
-    var magnitude = 0.05 * target.mass
-    var direction = Matter.Vector.create(0, -1) // always up
-    var force = Matter.Vector.mult(direction, magnitude)
-    Matter.Body.applyForce(target, target.position, force)
-  })
-  
-  Events.on(mouseConstraint, 'mouseup', function (e) {
-    
-    if (wasDragging) {
-      return
-    }
-    
-    // console.log('mouseup', e)
-    var size = Common.random(5, 60)
-    // var angle = aux.degreesToRadians(Common.random(0, 45))
-    
-    var newSquare = Bodies.rectangle(
-      e.mouse.mouseupPosition.x,
-      e.mouse.mouseupPosition.y,
-      size,
-      size,
-      {
-        // angle: angle,
-        restitution: 1,
-        density: 0.3,
-        render: {
-          fillStyle: '#3eeeb7',
-          strokeStyle: '#0adda6',
-          lineWidth: 2,
-        },
-        plugin: {
-        	sound: {
-        		audio: randomAudio(),
-        	},
-        	collisionStyles: {
-        		start: {
-          		fillStyle: '#efefef',
-        		}
-        	}
-        }
-      }
-    )
-    
-    // save to the list of bodies
-    bodies.push(newSquare)
-    World.add(engine.world, newSquare)
-  })
+
+  World.add(engine.world, mouseConstraint);
+
+  // keep the mouse in sync with rendering
+  render.mouse = mouse;
 
   return {
   	engine: engine,
@@ -346,9 +275,4 @@ matterSound.ready.then(() => {
 	}
 
 	let app = setup(config)
-
-	document.querySelector('[data-reset]').addEventListener('click', e => {
-		app.stop()
-		app = setup(config)
-	})
 })

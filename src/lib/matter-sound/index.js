@@ -79,32 +79,39 @@ MatterSound.prototype.initEngine = function (engine) {
     	 * As suggested at
     	 * https://github.com/liabru/matter-js/issues/155
     	 */
-    	let bodyAMomentum = this.Matter.Vector.mult(
-    		pair.bodyA._velocity || {x: 0, y: 0},
-    		pair.bodyA.mass === Infinity ? 0 : pair.bodyA.mass
-    	)
-			let bodyBMomentum = this.Matter.Vector.mult(
-				pair.bodyB._velocity || {x: 0, y: 0},
-				pair.bodyB.mass === Infinity ? 0 : pair.bodyB.mass
-			)
-			let relativeMomentum = this.Matter.Vector.sub(bodyAMomentum, bodyBMomentum)
-			let relativeMomentumMagnitude = this.Matter.Vector.magnitude(relativeMomentum)
+   //  	let bodyAMomentum = this.Matter.Vector.mult(
+   //  		pair.bodyA._velocity || {x: 0, y: 0},
+   //  		pair.bodyA.mass === Infinity ? 0 : pair.bodyA.mass
+   //  	)
+			// let bodyBMomentum = this.Matter.Vector.mult(
+			// 	pair.bodyB._velocity || {x: 0, y: 0},
+			// 	pair.bodyB.mass === Infinity ? 0 : pair.bodyB.mass
+			// )
+			// let relativeMomentum = this.Matter.Vector.sub(bodyAMomentum, bodyBMomentum)
+			// let relativeMomentumMagnitude = this.Matter.Vector.magnitude(relativeMomentum)
 
-			if (relativeMomentumMagnitude >= VOLUME_MAGNITUDE_MIN) {
-				// TODO: this is a hack
-				let volume = Math.min(
-					relativeMomentumMagnitude / VOLUME_MAGNITUDE_MAX,
-					1
-				)
+			// if (relativeMomentumMagnitude >= VOLUME_MAGNITUDE_MIN) {
+			// 	// TODO: this is a hack
+			// 	let volume = Math.min(
+			// 		relativeMomentumMagnitude / VOLUME_MAGNITUDE_MAX,
+			// 		1
+			// 	)
+
+	  //   	this.playBodyAudio(pair.bodyA, {
+	  //   		volume: volume
+	  //   	})
+	  //   	this.playBodyAudio(pair.bodyB, {
+	  //   		volume: volume
+	  //   	})
+			// }
+
 
 	    	this.playBodyAudio(pair.bodyA, {
-	    		volume: volume
+	    		volume: 1
 	    	})
 	    	this.playBodyAudio(pair.bodyB, {
-	    		volume: volume
+	    		volume: 1
 	    	})
-			}
-
 
 
       // pair.bodyA.previousFillStyle = pair.bodyA.render.fillStyle
@@ -159,6 +166,32 @@ MatterSound.prototype.playBodyAudio = function (body, options) {
 
 			clonedAudioElement.volume = options.volume
 			clonedAudioElement.play()
+		}
+	}
+
+	// HACK FOR ALTERNATE AUDIOS
+	if (body.plugin.sound.alternateAudios) {
+		let currentAudioIndex = body.plugin.sound.currentAudioIndex || 0
+		let targetAudioIndex = body.plugin.sound.alternateAudios.length > currentAudioIndex + 1 ?
+			currentAudioIndex + 1 : 0
+
+		let targetAudio = this.audios.find(audio => {
+			return audio.name === body.plugin.sound.alternateAudios[targetAudioIndex]
+		})
+
+		console.log(`play ${targetAudio.name}`)
+
+		if (targetAudio) {
+			// clone the node so that all plays
+			// of the same sound are kept separate and
+			// may be executed simultaneously and their configurations
+			// may be independent
+			let clonedAudioElement = targetAudio.element.cloneNode()
+
+			clonedAudioElement.volume = options.volume
+			clonedAudioElement.play()
+
+			body.plugin.sound.currentAudioIndex = targetAudioIndex
 		}
 	}
 }

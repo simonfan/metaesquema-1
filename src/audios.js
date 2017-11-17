@@ -72,4 +72,42 @@ module.exports = [
 		name: 'FX_004',
 		src: 'resources/sounds/Yamaha RM 50/FX/FX_004.wav',
 	},
+
+	// LIMAO
+	{
+		name: 'limao/clap',
+		src: 'resources/sounds/clap/infnclps2.wav'
+	},
+	{
+		name: 'limao/hithat',
+		src: 'resources/sounds/hithat/hihat68.wav'
+	},
+	{
+		name: 'limao/kick',
+		src: 'resources/sounds/kick/bassdrum53.wav'
+	},
+	{
+		name: 'limao/mallet-1',
+		src: 'resources/sounds/mallet/mallet-01.wav'
+	},
+	{
+		name: 'limao/mallet-2',
+		src: 'resources/sounds/mallet/mallet-02.wav'
+	},
+	{
+		name: 'limao/pad-1',
+		src: 'resources/sounds/pad/pad-01.wav'
+	},
+	{
+		name: 'limao/pad-2',
+		src: 'resources/sounds/pad/pad-02.wav'
+	},
+	{
+		name: 'limao/pad-3',
+		src: 'resources/sounds/pad/pad-03.wav'
+	},
+	{
+		name: 'limao/loop-1',
+		src: 'resources/sounds/loops/melody-loop_01.wav'
+	}
 ]
